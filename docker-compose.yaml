@@ -12,9 +12,9 @@ services:
     image: airbyte/init:${VERSION}
     logging: *default-logging
     container_name: init
-    command: /bin/sh -c "./scripts/create_mount_directories.sh /local_parent ${HACK_LOCAL_ROOT_PARENT} ${LOCAL_ROOT}"
+    command: /bin/sh -c "./scripts/create_mount_directories.sh /local_parent ${HACK_LOCAL_ROOT_PARENT} /tmp/airbyte_local"
     environment:
-      - LOCAL_ROOT=${LOCAL_ROOT}
+      - LOCAL_ROOT=/tmp/airbyte_local
       - HACK_LOCAL_ROOT_PARENT=${HACK_LOCAL_ROOT_PARENT}
     volumes:
       - /tmp:/local_parent
@@ -76,7 +76,7 @@ services:
       - JOB_MAIN_CONTAINER_MEMORY_LIMIT=${JOB_MAIN_CONTAINER_MEMORY_LIMIT}
       - JOB_MAIN_CONTAINER_MEMORY_REQUEST=${JOB_MAIN_CONTAINER_MEMORY_REQUEST}
       - LOCAL_DOCKER_MOUNT=${LOCAL_DOCKER_MOUNT}
-      - LOCAL_ROOT=${LOCAL_ROOT}
+      - LOCAL_ROOT=/tmp/airbyte_local
       - LOG_LEVEL=${LOG_LEVEL}
       - LOG_CONNECTOR_MESSAGES=${LOG_CONNECTOR_MESSAGES}
       - MAX_CHECK_WORKERS=${MAX_CHECK_WORKERS}
@@ -111,7 +111,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - workspace:${WORKSPACE_ROOT}
-      - ${LOCAL_ROOT}:${LOCAL_ROOT}
+      - /tmp/airbyte_local:/tmp/airbyte_local
     ports:
       - 9000
     networks:
@@ -154,7 +154,7 @@ services:
     volumes:
       - workspace:${WORKSPACE_ROOT}
       - data:${CONFIG_ROOT}
-      - ${LOCAL_ROOT}:${LOCAL_ROOT}
+      - /tmp/airbyte_local:/tmp/airbyte_local
     networks:
       - airbyte_internal
   webapp:
